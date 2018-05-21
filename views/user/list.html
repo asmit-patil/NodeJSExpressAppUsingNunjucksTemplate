@@ -1,0 +1,63 @@
+<!--
+including header content which is common for all pages
+-->
+
+{% include "../layout/header.html" %}
+
+{% if messages.error  %}
+    <p style="color:red">{{ messages.error }}</p>
+{% endif %}
+ 
+{% if messages.success  %}
+    <p style="color:green">{{ messages.success }}</p>
+{% endif %}   
+ 
+<table  border=2px solid black>
+ 
+    <tr style='text-align:left; background-color:#CCC'>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Email</th>
+        <th colspan="2">Action</th>
+    </tr>
+    
+    
+    <!--
+        Using FOREACH LOOP for the users array
+        
+        myArray.forEach(function(el, index) {
+            // el - current element, i - index
+        });
+    -->
+    {% if data  %}
+    {# data.forEach(function(user) { #}
+    {%  for user in data%}
+        <tr>
+            <td>{{ user.name }}</td>
+            <td>{{ user.age }}</td>
+            <td>{{ user.email }}</td>
+            
+            <td>
+                
+                    <form method="put" action="/users/edit/{{ user._id }}">
+                        <input type="submit" name="edit" value='Edit' />
+                        <!-- <input type="hidden" name="_method" value="PUT" /> -->
+                    </form></td>
+                    <td>
+                    <form method="post" action="/users/delete/{{ user._id }}">
+                        <input type="submit" name="delete" value='Delete' />
+                        <input type="hidden" name="_method" value="DELETE" />
+                    </form>
+               
+
+            </td>
+        </tr>
+    {% endfor %}
+    {% endif %}
+ 
+</table>
+ 
+<!--
+including footer content which is common for all pages
+-->
+{# {% include "../layout/footer.html" %} #}

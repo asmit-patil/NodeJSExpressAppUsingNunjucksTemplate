@@ -1,0 +1,6 @@
+
+
+.nav ul {list-style-type: none;clear: both;}
+.nav ul li{text-decoration: none}
+.nav ul li a{float: left;padding:20px;text-decoration: none;}
+h1{clear: both;}

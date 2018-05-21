@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    {# <script>
+       
+       
+{% block css %}
+  <link rel="stylesheet" href="./public/css/mycss.css" />
+{% endblock %}
+       
+    </script> #}
+  </head>
+  
+  <body>
+   
+    {% include "./layout/nav.html" %}
+    <h1>{{ title }}</h1>
+    
+    <h2>  Not yet Registered ? <a href="/users/add" >Click Here.</a></h2>
+    <h2>  For Login <a href="/users/login" >Click Here.</a></h2>
+
+  </body>
+</html>
+
+
