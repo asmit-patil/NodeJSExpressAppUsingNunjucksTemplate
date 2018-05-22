@@ -1,0 +1,77 @@
+<html>
+<head>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"> </script>
+
+{# <script>
+
+    $(function() {
+
+
+ 
+
+   $.getJSON('/users/getdemojson', function(data) {
+      
+       $.each(data, function(i, f) {
+          var tblRow = "<tr>" + "<td>" + f.key + "</td>" +
+           "<td>" + f.value + "</td>"+ "</tr>"
+           $(tblRow).appendTo("#userdata tbody");
+           
+     });
+     
+   });
+
+    
+});
+</script> #}
+</head>
+
+<body>
+
+{# <div class="wrapper">
+<div class="profile">
+   <table id= "userdata" border="2">
+  <thead>
+            <th>Key</th>
+            <th>value</th>
+            
+        </thead>
+      <tbody>
+
+       </tbody>
+   </table>
+
+</div>
+</div> #}
+{% import "../demo/text.html" as text %}
+{% import "../demo/image.html" as image %}
+{% import "../demo/video.html" as video %}
+{% import "../demo/link.html" as link %}
+{% import "../demo/rte.html" as rte %}
+<div> 
+
+{% for d in data %}
+{% if d.key == "link" %}
+{% include "../demo/link.html"%}
+{{ link.li(d.value) }}
+{%endif%}
+{% if d.key == "text" %}
+{% include "../demo/text.html" %}
+{{ text.h1(d.value) }}
+{%endif%}
+{% if d.key == "image" %}
+{% include "../demo/image.html"%}
+{{ image.img(d.value) }}
+{%endif%}
+{% if d.key == "video" %}
+{% include "../demo/video.html"%}
+{{ video.vid(d.value) }}
+{%endif%}
+
+{% if d.key == "rte" %}
+{% include "../demo/rte.html"%}
+{{ rte.p(d.value) }}
+{%endif%}
+{%endfor%}
+</div>
+</body>
+</html>

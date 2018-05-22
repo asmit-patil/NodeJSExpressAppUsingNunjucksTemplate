@@ -1,0 +1,9 @@
+
+
+{% macro vid(videourl) %}
+<div id="video"> <video width="320" height="240" controls>
+  <source src="{{videourl}}" type="video/mp4">
+  
+  Your browser does not support the video tag.
+</video> </div>
+{% endmacro %}

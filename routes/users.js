@@ -4,6 +4,8 @@ var ObjectId = require('mongodb').ObjectId
 var bcrypt = require('bcrypt');
 var nunjucks  = require('nunjucks');
 var mongoose = require('mongoose')
+var fs=require("fs")
+var demo=require("../demo.json")
 mongoose.Promise = Promise
 var MongoClient = require('mongodb').MongoClient;
 nunjucks.configure('views', {
@@ -36,7 +38,55 @@ app.get('/', function(req, res, next) {
         }
     })
 })
+app.get('/getdemo', function(req,res,next){
+    res.render('user/demo')
+})
+fs.readFile('demo.json','utf-8','urlencoded')
+app.get('/getdemojson', function(req,res,next){
+    console.log(demo);
+    // var text,imgurl,videourl,rte,linkurl;
+    // for(var i=0;i<demo.length;i++){
+       
+    //     console.log(JSON.stringify(demo[i].key))
+    //     if(demo[i].key == "text"){
+            
+    //             text=demo[i].value
+    //             console.log(text)
+            
+    //     }
+    //     if(demo[i].key == "image"){
+            
+    //             imgurl=demo[i].value
+    //             console.log(imgurl)
+    //     }
+    //     if(demo[i].key == "video"){
+            
+    //             videourl=demo[i].value
+    //             console.log(videourl)
+    //     }
+    //     if(demo[i].key == "link"){
+    //         linkurl=demo[i].value
+    //         console.log(linkurl)
+    //     }
+    //     if(demo[i].key == "rte"){
+    //         rte=demo[i].value
+    //         console.log(rte)
+            
+    //     }
+    // }
+    //     res.render('user/demo',{
+    //         text:text,imgurl:imgurl,videourl:videourl,linkurl:linkurl,rte:rte
+    //     })
+   
+   // res.json(demo)
+   
+   res.render('user/demo',{
+       data:demo
+    });
+    
+    
 
+})
 // SHOW ADD USER FORM
 app.get('/add', function(req, res, next){    
     // render to views/user/add.ejs
@@ -55,7 +105,7 @@ app.get('/login', function(req, res, next){
     res.render('user/login', {
         email: '' ,
         password:'' ,
-        messages:{}     
+        
     })
 //     var res = nunjucks.render('user/login.html', {  email: '' , password:''  });
 
