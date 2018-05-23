@@ -23,6 +23,7 @@
     
 });
 </script> #}
+
 </head>
 
 <body>
@@ -66,11 +67,11 @@
 {% include "../demo/video.html"%}
 {{ video.vid(d.value) }}
 {%endif%}
-
+<div class="rte">
 {% if d.key == "rte" %}
 {% include "../demo/rte.html"%}
-{{ rte.p(d.value) }}
-{%endif%}
+{{ rte.p(d.value) | safe }}
+{%endif%}</div>
 {%endfor%}
 </div>
 </body>

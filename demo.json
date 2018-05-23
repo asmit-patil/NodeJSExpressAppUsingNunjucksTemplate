@@ -7,7 +7,7 @@
         {"key": "text", "value": "This is json file data "},
         {"key": "image", "value": "./public/images/1.jpeg"},
         {"key": "video", "value": "./public/videos/1.MP4"},
-        {"key": "rte", "value": "<p>my text</p>"}
+        {"key": "rte", "value": "<p>Heading 1<strong>&nbsp;<a href=\"https://google.com\">Google</a>&nbsp;</strong><em>tes</em><span class=\"redactor-invisible-space\"><em>t&nbsp;</em></span></p><p style=\"text-align: center;\">Task1&nbsp;</p><p style=\"text-align: center;\">Task 2</p><p style=\"text-align: center;\"><br></p>"}
       ]
 
 

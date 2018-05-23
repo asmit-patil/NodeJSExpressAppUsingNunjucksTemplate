@@ -5,11 +5,12 @@ var bcrypt = require('bcrypt');
 var nunjucks  = require('nunjucks');
 var mongoose = require('mongoose')
 var fs=require("fs")
+var rte = require('rte');
 var demo=require("../demo.json")
 mongoose.Promise = Promise
 var MongoClient = require('mongodb').MongoClient;
 nunjucks.configure('views', {
-  autoescape: true,
+  autoescape: false,
   express   : app
 });
 app.use('/public', express.static('public'))
