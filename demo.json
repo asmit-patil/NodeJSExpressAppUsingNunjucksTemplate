@@ -2,10 +2,11 @@
 
 
 
-      [ {"key": "link", "value": "/"},
+      [ 
         {"key": "text", "value": "This text came from json file "}, 
         {"key": "text", "value": "This is json file data "},
         {"key": "image", "value": "./public/images/1.jpeg"},
+        {"key": "link", "value": "/"},
         {"key": "video", "value": "./public/videos/1.MP4"},
         {"key": "rte", "value": "<p>Heading 1<strong>&nbsp;<a href=\"https://google.com\">Google</a>&nbsp;</strong><em>tes</em><span class=\"redactor-invisible-space\"><em>t&nbsp;</em></span></p><p style=\"text-align: center;\">Task1&nbsp;</p><p style=\"text-align: center;\">Task 2</p><p style=\"text-align: center;\"><br></p><img src=\"./public/images/1.jpeg\" height=\"200px\" width=\"200px\">"},
         {"key": "image", "value": "./public/images/2.jpg"}

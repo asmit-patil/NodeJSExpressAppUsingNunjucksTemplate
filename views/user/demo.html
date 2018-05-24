@@ -27,7 +27,10 @@
 </head>
 
 <body>
-
+<div> 
+           {% include "../layout/nav.html" %}
+           
+        </div> 
 {# <div class="wrapper">
 <div class="profile">
    <table id= "userdata" border="2">
@@ -42,6 +45,7 @@
    </table>
 
 </div>
+
 </div> #}
 {% import "../demo/text.html" as text %}
 {% import "../demo/image.html" as image %}
@@ -49,6 +53,7 @@
 {% import "../demo/link.html" as link %}
 {% import "../demo/rte.html" as rte %}
 <div> 
+
 
 {% for d in data %}
 {% if d.key == "link" %}
