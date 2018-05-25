@@ -4,7 +4,7 @@ including header content which is common for all pages
 
 
 {% include "../layout/header.html" %}    
-{% include "../layout/nav.html" %}      
+
 {% if (messages.error)  %}
     <p style="color:red">{{ messages.error }}</p>
 {% endif %}
@@ -26,6 +26,14 @@ including header content which is common for all pages
         <tr> 
             <td>Email</td>
             <td><input type="text" name="email" value="{{email}}" /></td>
+        </tr>
+        <tr> 
+            <td>Class</td>
+            <td><input type="text" name="class" value="{{class}}" /></td>
+        </tr>
+        <tr> 
+            <td>Hobbies</td>
+            <td><input type="text" name="hobbies" value="{{hobbies}}" /></td>
         </tr>
         <tr> 
             <td></td>

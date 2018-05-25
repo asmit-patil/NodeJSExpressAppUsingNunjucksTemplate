@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>JavaScript - read JSON from URL</title>
+<title>github-profile</title>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 </head>
 
 <body>
-<div> 
-           {% include "../layout/nav.html" %}
-           
-        </div> 
+    <div> 
+        {% include "../layout/nav.html" %}    
+    </div> 
+        
     <div class="mypanel" style="clear:both">
-    <h4 >User Name: </h4><p style="margin-left:10px;" id="login"></p>
-    <h4>User Id: </h4><p style="margin-left:10px;" id="id"></p>
-    <h4>Profile Picture:</h4> <p style="margin-left:10px;" id="profile"></p>
-
+    <h4 >User Name: </h4><p style="margin-left:10px;" id="login">{{login}}</p>
+    <h4>User Id: </h4><p style="margin-left:10px;" id="id">{{id}}</p>
+    <h4>Profile Picture:</h4> <p style="margin-left:10px;" id="profileimg"><img src="{{imgurl}}" height="100px" widht="60px"></p>
+    <h4>Profile Url:</h4> <p style="margin-left:10px;" id="profileurl"><a href="{{profileurl}}">Click Here to visit GitHub Profile</a></p>
     </div>
+    {# 
 
     <script>
     $.getJSON('https://api.github.com/users/asmit-patil', function(data) {
@@ -25,12 +26,24 @@
         var login= `${data.login}`;
         var id=`${data.id}`;
         var img=`<img src="${data.avatar_url}" height="100px" widht="60px">`;
+        var url=`<a href="${data.html_url}">Click Here to visit GitHub Profile</a>`;
         $("#login").html(login);
         $("#id").html(id);
-        $("#profile").html(img);
-
+        $("#profileimg").html(img);
+        $("#profileurl").html(url);
     });
-    </script>
+    </script> #}
     
 </body>
 </html>
+
+
+{# users : {
+    name : 'abc',
+    hobbies: ['dance', 'music','qwe'],
+    class : 5
+}
+
+class > 5 and hobbies me cricket hai toh display
+hobbies me cricket or music  #}
+

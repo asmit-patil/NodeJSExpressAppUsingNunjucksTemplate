@@ -18,6 +18,8 @@ including header content which is common for all pages
         <th>Name</th>
         <th>Age</th>
         <th>Email</th>
+        <th>Class</th>
+        <th>Hobbies</th>
         <th colspan="2">Action</th>
     </tr>
     
@@ -36,7 +38,8 @@ including header content which is common for all pages
             <td>{{ user.name }}</td>
             <td>{{ user.age }}</td>
             <td>{{ user.email }}</td>
-            
+            <td>{{ user.class }}</td>
+            <td>{{ user.hobbies }}</td>
             <td>
                 
                     <form method="put" action="/users/edit/{{ user._id }}">

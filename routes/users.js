@@ -31,8 +31,147 @@ app.get('/', function(req, res, next) {
                 data: ''
             })
         } else {
-            // render to views/user/list.ejs template file
+           
+            
+             res.render('user/list', {
+                title: 'User List', 
+                data: result
+            })
+        }
+    })
+})
+
+app.get('/userswithsecondcondition', function(req, res, next) {    
+    // fetch and sort users collection by id in descending order
+    req.db.collection('users').find().sort({"_id": -1}).toArray(function(err, result) {
+        //if (err) return console.log(err)
+        if (err) {
+            req.flash('error', err)
             res.render('user/list', {
+                title: 'User List', 
+                data: ''
+            })
+        } else {
+            var counter=0;
+            console.log(result.length)
+            while(counter < result.length){
+                for(user in result){
+                    //console.log(result)
+                    var hobbies=result[user].hobbies;
+                    
+                    var h=hobbies.split(",")
+                    console.log(h,"sadsfdsfdsgds")
+                    console.log(h.length)
+                    for (var hobby=0;hobby<h.length;hobby++){
+                        console.log(h[hobby],"curr hobby")
+                        if(h[hobby]== "cricket" || h[hobby]=="music"){
+                            break;
+                        }
+                        else if(h[hobby] != "cricket" || h[hobby]=="music")  {
+                            console.log("inside 1st if")
+                            if(hobby == h.length-1){
+                                var index = result.indexOf(result[user]);
+                                console.log("inside 2nd if")
+                                console.log(index)
+                               if(index > -1){
+                                   console.log("deltion")
+                                   
+                                result.splice(index, 1);
+                                //console.log(result,"sajdsakggggggggggggggggggggggggggggggggggg")
+                                break;
+                               }
+                            
+                            }
+                            console.log(hobby+"sadsafsfsfss")  
+                        }   
+                    }
+                }
+                counter++;
+            }
+
+            
+             res.render('user/list', {
+                title: 'User List', 
+                data: result
+            })
+        }
+    })
+})
+
+
+app.get('/userswithfirstcondition', function(req, res, next) {    
+    // fetch and sort users collection by id in descending order
+    req.db.collection('users').find().sort({"_id": -1}).toArray(function(err, result) {
+        //if (err) return console.log(err)
+        if (err) {
+            req.flash('error', err)
+            res.render('user/list', {
+                title: 'User List', 
+                data: ''
+            })
+        } else {
+            //render to views/user/list.ejs template file
+            
+            var counter=0;
+            console.log(result.length)
+            while(counter < result.length){
+                for(user in result){
+                    var cls=(result[user].class)
+                    console.log(cls,"sadsfdsfdsgds")
+                     
+                    console.log(result[user])
+                    if (cls <= 5){
+                        console.log("if looop")
+                            
+                        var index = result.indexOf(result[user]);
+                        console.log(index)
+                           if(index > -1){
+                               console.log("deltion")
+                               
+                            result.splice(index, 1);
+                            console.log(result,"sajdsakggggggggggggggggggggggggggggggggggg")
+                           
+                           }
+                    break;
+                    } 
+
+                }
+                for(user in result){
+                    //console.log(result)
+                    var hobbies=result[user].hobbies;
+                    
+                    var h=hobbies.split(",")
+                    console.log(h,"sadsfdsfdsgds")
+                    console.log(h.length)
+                    for (var hobby=0;hobby<h.length;hobby++){
+                        console.log(h[hobby],"curr hobby")
+                        if(h[hobby]== "cricket"){
+                            break;
+                        }
+                        else if(h[hobby] != "cricket")  {
+                            console.log("inside 1st if")
+                            if(hobby == h.length-1){
+                                var index = result.indexOf(result[user]);
+                                console.log("inside 2nd if")
+                                console.log(index)
+                               if(index > -1){
+                                   console.log("deltion")
+                                   
+                                result.splice(index, 1);
+                                //console.log(result,"sajdsakggggggggggggggggggggggggggggggggggg")
+                                break;
+                               }
+                            
+                            }
+                            console.log(hobby+"sadsafsfsfss")  
+                        }   
+                    }
+                }
+                counter++;
+           }
+            
+            //console.log("sdafsafds",result,"dsgfgdsfdsdshfdsssssssssssss")
+             res.render('user/list', {
                 title: 'User List', 
                 data: result
             })
@@ -50,8 +189,10 @@ app.get('/getdemojson', function(req,res,next){
     });
 })
 //fs.readFile('https://api.github.com/users/asmit-patil','utf-8','urlencoded')
+const request = require('request');
+var router=require('router')
 app.get('/getgitprofiledata',function(req,res,next){
-    res.render('user/viewgitprofile')
+   // res.render('user/viewgitprofile')
 ///////////////////////////////////commented code from viewgitprofile.html/////////////////////////////
 //     var text = `Login: ${data.login}<br>                                                          //
 //     Id: ${data.id}<br>                                                                            //
@@ -59,6 +200,33 @@ app.get('/getgitprofiledata',function(req,res,next){
 //     $("mypanel").html(text);                                                                      //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////    
 
+
+
+const options = {  
+    url: 'https://api.github.com/users/asmit-patil',
+    method: 'GET',
+    headers: {
+        'Accept': 'application/vnd.github.v3+json',
+        'Accept-Charset': 'utf-8',
+        'User-Agent': 'my-reddit-client'
+    }
+};
+
+request(options, function(err, res2, body) { 
+    if (err || res2.statusCode !== 200) {
+        return res2.sendStatus(500);
+      } 
+    let json = JSON.parse(body);
+    console.log(json);
+    res.render('user/viewgitprofile',{
+        login:json.login,
+        id:json.id,
+        imgurl:json.avatar_url,
+        profileurl:json.html_url
+    })
+});
+
+//console.log(json);
 
 })
 // SHOW ADD USER FORM
@@ -123,6 +291,14 @@ var mySchema = new Schema({
     age:{
         type: Number,
         required: true,
+    },
+    class:{
+        type: String,
+        required: true,
+    },
+    hobbies:{
+        type: String,
+        required: true,
     }
 });
  
@@ -181,7 +357,9 @@ app.post('/add', function(req, res, next){
     req.assert('name', 'Name is required').notEmpty()           //Validate name
     req.assert('age', 'Age should be numeric').isNumeric()             //Validate age
     req.assert('email', 'A valid email is required').isEmail()  //Validate email
-    req.assert('password','Password is required').notEmpty()    //Validate password
+    req.assert('password','Password is required').notEmpty()
+    req.assert('class','Class is required').notEmpty()
+    req.assert('hobbies','hobbies is required').notEmpty()   
     var errors = req.validationErrors()
     
     
@@ -201,9 +379,11 @@ app.post('/add', function(req, res, next){
             name: req.sanitize('name').escape().trim(),
             age: req.sanitize('age').escape().trim(),
             email: req.sanitize('email').escape().trim(),
-            password: req.sanitize('password').escape().trim()
+            password: req.sanitize('password').escape().trim(),
+            class: req.sanitize('class').escape().trim(),
+            hobbies: req.sanitize('hpbbies').escape().trim()
         })
-       //console.log(user.email)
+       console.log(user.hobbies)
        // req.db.collection('users').save(user, function(err, result) {
            // console.log(user.email)
            user.save(function(err,result){
@@ -216,7 +396,9 @@ app.post('/add', function(req, res, next){
                     name: user.name,
                     age: user.age,
                     email: user.email,
-                    password:user.password                    
+                    password:user.password,
+                    class:    user.class,
+                    hobbies:  user.hobbies             
                 })
             } else {                
                 req.flash('success', 'Registered successfully! Now you can Login with same')
@@ -245,7 +427,9 @@ app.post('/add', function(req, res, next){
             name: req.body.name,
             age: req.body.age,
             email: req.body.email,
-            password:req.body.password
+            password:req.body.password,
+            class:    req.body.class,
+            hobbies:  req.body.hobbies  
         })
     }
 })
@@ -325,7 +509,8 @@ app.get('/edit/(:id)', function(req, res, next){
                 name: result[0].name,
                 age: result[0].age,
                 email: result[0].email ,
-                         
+                class:result[0].class,
+                hobbies:result[0].hobbies         
             })
         }
     })    
@@ -336,6 +521,8 @@ app.put('/edit/(:id)', function(req, res, next) {
     req.assert('name', 'Name is required').notEmpty()           //Validate name
     req.assert('age', 'Age is required').notEmpty()             //Validate age
     req.assert('email', 'A valid email is required').isEmail()  //Validate email
+    req.assert('class','Class is required').notEmpty()
+    req.assert('hobbies','hobbies is required').notEmpty() 
     var errors = req.validationErrors()
     
     if( !errors ) {   //No errors were found.  Passed Validation!
@@ -353,6 +540,8 @@ app.put('/edit/(:id)', function(req, res, next) {
             name: req.sanitize('name').escape().trim(),
             age: req.sanitize('age').escape().trim(),
             email: req.sanitize('email').escape().trim(),
+            class: req.sanitize('class').escape().trim(),
+            hobbies: req.sanitize('hobbies').escape().trim()
         }
         
         var o_id = new ObjectId(req.params.id)
@@ -367,6 +556,8 @@ app.put('/edit/(:id)', function(req, res, next) {
                     name: req.body.name,
                     age: req.body.age,
                     email: req.body.email,
+                    class: req.body.class,
+                    hobbies:req.body.hobbies
                     
                 })
             } else {
@@ -402,6 +593,8 @@ app.put('/edit/(:id)', function(req, res, next) {
             name: req.body.name,
             age: req.body.age,
             email: req.body.email,
+            class: req.body.class,
+            hobbies:req.body.hobbies
            
         })
     }
