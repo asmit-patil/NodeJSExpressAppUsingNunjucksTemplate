@@ -15,11 +15,13 @@ including header content which is common for all pages
 <table  border=2px solid black>
  
     <tr style='text-align:left; background-color:#CCC'>
-        <th>Name</th>
+        <th>First Name</th>
+        <th>Last Name</th>
         <th>Age</th>
         <th>Email</th>
         <th>Class</th>
         <th>Hobbies</th>
+        <th>Result</th>
         <th colspan="2">Action</th>
     </tr>
     
@@ -35,11 +37,13 @@ including header content which is common for all pages
     {# data.forEach(function(user) { #}
     {%  for user in data%}
         <tr>
-            <td>{{ user.name }}</td>
+            <td>{{ user.firstname }}</td>
+             <td>{{ user.lastname }}</td>
             <td>{{ user.age }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.class }}</td>
             <td>{{ user.hobbies }}</td>
+             <td>{{ user.result }}</td>
             <td>
                 
                     <form method="put" action="/users/edit/{{ user._id }}">

@@ -70,12 +70,16 @@
 <form action="/users/add" method="post" name="form1" onsubmit="return validateform()">
     <table width="25%" border="0">
         <tr> 
-            <td>Name</td>
-            <td><input type="text" name="name" id="name" value="{{ name }}" /></td>
+            <td>First Name</td>
+            <td><input type="text" name="firstname" id="firstname" value="{{ firstname }}" /></td>
+        </tr>
+        <tr> 
+            <td>Last Name</td>
+            <td><input type="text" name="lastname" id="lastname" value="{{ lastname }}" /></td>
         </tr>
         <tr> 
             <td>Age</td>
-            <td><input type="text" name="age" id="ageTextBox" value="{{age}}" /></td>
+            <td><input type="number" name="age" id="ageTextBox" value="{{age}}" /></td>
         </tr>
         <tr> 
             <td>Email</td>
@@ -88,6 +92,10 @@
         <tr> 
             <td>Hobbies</td>
             <td><input type="text" name="hobbies" value="{{hobbies}}" /></td>
+        </tr>
+         <tr> 
+            <td>Result</td>
+            <td><input type="text" name="result" value="{{result}}" /></td>
         </tr>
         <tr> 
             <td>Password</td>
@@ -167,18 +175,11 @@
       }
       
    function validateform(){
-    var name=document.getElementById("name").value;
-    var alphaExp = /^[A-Za-z]+-[^\\s]+/;      
+   
+    //var alphaExp = /^[A-Za-z]+-[^\\s]+/;      
     var age=document.getElementById("ageTextBox").value;
-    if (!name.match(alphaExp)) {
-        document.getElementById("error").innerHTML="Enter proper name with only alphabets and with one Hypen. Ex : asmit-patil ";
-        return false;
-    }
-    if ((name.length < 5) || (name.length > 15))
-    {
-        document.getElementById("error").innerHTML="Name sholud be greater than 5 characters and less than 16 characters";
-        return false;
-    }
+    
+    
     
     //check if age is a number or less than or greater than 100
     if (isNaN(age) || age < 18 || age > 100)

@@ -6,6 +6,7 @@ var nunjucks  = require('nunjucks');
 var mongoose = require('mongoose')
 var fs=require("fs")
 var rte = require('rte');
+var CircularJSON = require('circular-json');
 var demo=require("../demo.json")
 mongoose.Promise = Promise
 var MongoClient = require('mongodb').MongoClient;
@@ -19,11 +20,75 @@ app.set('view engine', 'html');
 //var url = 'mongodb://localhost:27017/testDB2';
 
 //console.log(SALT_WORK_FACTOR)
-// SHOW LIST OF USERS
+
+
+// ///////////////////////////////////////////////SHOW LIST OF USERS////////////////////////////////////////////////////////////
 app.get('/', function(req, res, next) {    
     // fetch and sort users collection by id in descending order
-    req.db.collection('users').find().sort({"_id": -1}).toArray(function(err, result) {
+    req.db.collection('users').find().sort({"_id": -1}).toArray().then(function( result) {
         //if (err) return console.log(err)
+         console.log(typeof result)
+        // if (err) {
+        //     req.flash('error', err)
+        //     res.render('user/list', {
+        //         title: 'User List', 
+        //         data: ''
+        //     })
+        // } else {
+            
+             
+             res.render('user/list', {
+                title: 'User List', 
+                data: result
+            })
+       // }
+    })
+})
+
+//////////////////////////////////////////for getting unique names////////////////////////////////////////////////////////////////
+app.get('/getuniquefirstnames',function(req,res,next){
+    db.collection('users').distinct('firstname', function(err, docs) {
+        if(err) throw err
+        else{
+            console.log(typeof docs)
+            res.send(docs)
+        }
+      });
+})
+
+//////////////////////////////////////////for getting minimum-age & maximum-age & average-age///////////////////////////////////////
+app.get('/getage',function(req,res,next){
+   db.collection('users').aggregate(
+        [
+        {$group:{   _id:null,
+                    min_age:{$min:"$age"},
+                    max_age:{$max:"$age"},
+                    avg_age:{$avg:"$age"}
+                }}
+        ]).toArray(
+        function(err, docs) {
+        if(err) throw err
+        else{
+            
+            console.log(typeof docs)
+            //console.log(CircularJSON.stringify(docs,"sdafffffffff"))
+            // res.send(JSON.stringify(docs))
+            res.render('demo/agedemo',{
+                
+                result: JSON.stringify(docs)
+            })
+
+        }
+      });
+})
+
+
+/////////////////////////////////////////////show users as per provided query parameter and pattern///////////////////////////////
+app.get('/getnames',function(req,res,next){
+
+    var p=new RegExp(req.query.pattern)
+    console.log(p)
+    req.db.collection('users').find({ $or: [ { firstname: { $regex: p, $options: "i" } }, { lastname: { $regex: p, $options: "i" } } ] }).toArray(function(err, result) {
         if (err) {
             req.flash('error', err)
             res.render('user/list', {
@@ -31,19 +96,85 @@ app.get('/', function(req, res, next) {
                 data: ''
             })
         } else {
-           
-            
              res.render('user/list', {
                 title: 'User List', 
                 data: result
             })
-        }
+        }   
     })
+   
+       
 })
 
+///////////////////////////// to get pass and fail count from result feild///////////////////////////////////////////////
+app.get('/getpassfailcount',function(req,res,next){
+    req.db.collection('users').aggregate(
+        [
+           
+           { $group: { _id: "$result", total_count: { $sum: 1 } } }
+        ],
+        function(err, docs) {
+        if(err) throw err
+        else{
+            console.log(typeof docs)
+            //res.send(JSON.stringify(docs))
+            res.render('demo/agedemo',{
+                
+                result: JSON.stringify(docs)
+            })
+        }
+      }
+     )
+})
+
+//////////////////////////////////////////////////////to get pass count//////////////////////////////////////////////////////
+app.get('/getpasscount',function(req,res,next){
+    req.db.collection('users').aggregate(
+        [
+           { $match: {result:"pass"}},
+           { $group: { _id: null, pass_count: { $sum: 1 } } }
+        ],
+        function(err, docs) {
+        if(err) throw err
+        else{
+            console.log(docs)
+            // res.send(JSON.stringify(docs))
+            res.render('demo/agedemo',{
+                
+                result: JSON.stringify(docs)
+            })
+        }
+      }
+     )
+    
+})
+/////////////////////////////////////////////////////////to get fail count///////////////////////////////////////////////////
+app.get('/getfailcount',function(req,res,next){
+    req.db.collection('users').aggregate(
+        [
+           { $match: {result:"fail"}},
+           { $group: { _id: null, fail_count: { $sum: 1 } } }
+        ],
+        function(err, docs) {
+        if(err) throw err
+        else{
+            console.log(docs)
+            // res.send(JSON.stringify(docs))
+            res.render('demo/agedemo',{
+                
+                result: JSON.stringify(docs)
+            })
+        }
+      }
+     )
+    
+})
+
+////////////////////////////display users whose hobbies are either cricket or music or both////////////////////////////////
 app.get('/userswithsecondcondition', function(req, res, next) {    
     // fetch and sort users collection by id in descending order
-    req.db.collection('users').find().sort({"_id": -1}).toArray(function(err, result) {
+    req.db.collection('users').find({ $or: [ { hobbies: "music" }, { hobbies: "cricket"} ] }).toArray(function(err, result) {
+        console.log(typeof result)
         //if (err) return console.log(err)
         if (err) {
             req.flash('error', err)
@@ -52,44 +183,6 @@ app.get('/userswithsecondcondition', function(req, res, next) {
                 data: ''
             })
         } else {
-            var counter=0;
-            console.log(result.length)
-            while(counter < result.length){
-                for(user in result){
-                    //console.log(result)
-                    var hobbies=result[user].hobbies;
-                    
-                    var h=hobbies.split(",")
-                    console.log(h,"sadsfdsfdsgds")
-                    console.log(h.length)
-                    for (var hobby=0;hobby<h.length;hobby++){
-                        console.log(h[hobby],"curr hobby")
-                        if(h[hobby]== "cricket" || h[hobby]=="music"){
-                            break;
-                        }
-                        else if(h[hobby] != "cricket" || h[hobby]=="music")  {
-                            console.log("inside 1st if")
-                            if(hobby == h.length-1){
-                                var index = result.indexOf(result[user]);
-                                console.log("inside 2nd if")
-                                console.log(index)
-                               if(index > -1){
-                                   console.log("deltion")
-                                   
-                                result.splice(index, 1);
-                                //console.log(result,"sajdsakggggggggggggggggggggggggggggggggggg")
-                                break;
-                               }
-                            
-                            }
-                            console.log(hobby+"sadsafsfsfss")  
-                        }   
-                    }
-                }
-                counter++;
-            }
-
-            
              res.render('user/list', {
                 title: 'User List', 
                 data: result
@@ -98,10 +191,11 @@ app.get('/userswithsecondcondition', function(req, res, next) {
     })
 })
 
-
+//////////////////////////////////////display list of users who has class <5 and hobby as cricket///////////////////////////////////
 app.get('/userswithfirstcondition', function(req, res, next) {    
     // fetch and sort users collection by id in descending order
-    req.db.collection('users').find().sort({"_id": -1}).toArray(function(err, result) {
+    
+    req.db.collection('users').find({ $and: [ { class: { $gt: "5" } }, { hobbies: "cricket"} ] }).toArray(function(err, result) {
         //if (err) return console.log(err)
         if (err) {
             req.flash('error', err)
@@ -111,65 +205,7 @@ app.get('/userswithfirstcondition', function(req, res, next) {
             })
         } else {
             //render to views/user/list.ejs template file
-            
-            var counter=0;
-            console.log(result.length)
-            while(counter < result.length){
-                for(user in result){
-                    var cls=(result[user].class)
-                    console.log(cls,"sadsfdsfdsgds")
-                     
-                    console.log(result[user])
-                    if (cls <= 5){
-                        console.log("if looop")
-                            
-                        var index = result.indexOf(result[user]);
-                        console.log(index)
-                           if(index > -1){
-                               console.log("deltion")
-                               
-                            result.splice(index, 1);
-                            console.log(result,"sajdsakggggggggggggggggggggggggggggggggggg")
-                           
-                           }
-                    break;
-                    } 
-
-                }
-                for(user in result){
-                    //console.log(result)
-                    var hobbies=result[user].hobbies;
-                    
-                    var h=hobbies.split(",")
-                    console.log(h,"sadsfdsfdsgds")
-                    console.log(h.length)
-                    for (var hobby=0;hobby<h.length;hobby++){
-                        console.log(h[hobby],"curr hobby")
-                        if(h[hobby]== "cricket"){
-                            break;
-                        }
-                        else if(h[hobby] != "cricket")  {
-                            console.log("inside 1st if")
-                            if(hobby == h.length-1){
-                                var index = result.indexOf(result[user]);
-                                console.log("inside 2nd if")
-                                console.log(index)
-                               if(index > -1){
-                                   console.log("deltion")
-                                   
-                                result.splice(index, 1);
-                                //console.log(result,"sajdsakggggggggggggggggggggggggggggggggggg")
-                                break;
-                               }
-                            
-                            }
-                            console.log(hobby+"sadsafsfsfss")  
-                        }   
-                    }
-                }
-                counter++;
-           }
-            
+            console.log(result)
             //console.log("sdafsafds",result,"dsgfgdsfdsdshfdsssssssssssss")
              res.render('user/list', {
                 title: 'User List', 
@@ -178,9 +214,7 @@ app.get('/userswithfirstcondition', function(req, res, next) {
         }
     })
 })
-// app.get('/getdemo', function(req,res,next){
-//     res.render('user/demo')
-// })
+//////////////////read json file and render to files according to the kay and value present in json////////////////////////////////////
 fs.readFile('demo.json','utf-8','urlencoded')
 app.get('/getdemojson', function(req,res,next){
     console.log(demo);
@@ -188,20 +222,10 @@ app.get('/getdemojson', function(req,res,next){
        data:demo
     });
 })
-//fs.readFile('https://api.github.com/users/asmit-patil','utf-8','urlencoded')
+//////////////////////////////////display github data by using provided githuburl///////////////////////////////////////////////
 const request = require('request');
 var router=require('router')
 app.get('/getgitprofiledata',function(req,res,next){
-   // res.render('user/viewgitprofile')
-///////////////////////////////////commented code from viewgitprofile.html/////////////////////////////
-//     var text = `Login: ${data.login}<br>                                                          //
-//     Id: ${data.id}<br>                                                                            //
-//     Image:<img src="${data.avatar_url}" height="50px" widht="50px">`                              //
-//     $("mypanel").html(text);                                                                      //
-///////////////////////////////////////////////////////////////////////////////////////////////////////    
-
-
-
 const options = {  
     url: 'https://api.github.com/users/asmit-patil',
     method: 'GET',
@@ -226,18 +250,23 @@ request(options, function(err, res2, body) {
     })
 });
 
-//console.log(json);
+
 
 })
+
 // SHOW ADD USER FORM
 app.get('/add', function(req, res, next){    
     // render to views/user/add.ejs
     res.render('user/add', {
         title: 'Add New User',
-        name: '',
+        firstname: '',
+        lastname:'',
         age: '',
         email: '' ,
-        password:''       
+        password:'',
+        class:'',
+        hobbies:'',
+        result:''      
     })
 })
 
@@ -249,11 +278,6 @@ app.get('/login', function(req, res, next){
         password:'' ,
         
     })
-//     var res = nunjucks.render('user/login.html', {  email: '' , password:''  });
-
-// nunjucks.render('async.html', function(err, res) {
-// });
-
 })
 
 
@@ -275,7 +299,11 @@ db.once('open', function(){
  
 var Schema = mongoose.Schema;
 var mySchema = new Schema({
-    name:{
+    firtname:{
+        type: String,
+        required: true
+    },
+    lastname:{
         type: String,
         required: true
     },
@@ -299,7 +327,12 @@ var mySchema = new Schema({
     hobbies:{
         type: String,
         required: true,
-    }
+    },
+    result:{
+        type: String,
+        required: true
+    },
+   
 });
  
 var User = mongoose.model('users', mySchema);
@@ -352,14 +385,16 @@ mySchema.pre('save', function(next){
     });
 };
         
-// ADD NEW USER POST ACTION
+// ////////////////////////////////////////ADD NEW USER POST ACTION////////////////////////////////////////////
 app.post('/add', function(req, res, next){    
-    req.assert('name', 'Name is required').notEmpty()           //Validate name
+    req.assert('firstname', 'firstName is required').notEmpty()           //Validate name
+    req.assert('lastname', 'lastName is required').notEmpty() 
     req.assert('age', 'Age should be numeric').isNumeric()             //Validate age
     req.assert('email', 'A valid email is required').isEmail()  //Validate email
     req.assert('password','Password is required').notEmpty()
     req.assert('class','Class is required').notEmpty()
-    req.assert('hobbies','hobbies is required').notEmpty()   
+    req.assert('hobbies','hobbies is required').notEmpty()  
+    req.assert('result', 'Name is required').notEmpty()  
     var errors = req.validationErrors()
     
     
@@ -376,12 +411,14 @@ app.post('/add', function(req, res, next){
         ********************************************/
         
         var user = new User({
-            name: req.sanitize('name').escape().trim(),
-            age: req.sanitize('age').escape().trim(),
+            firstname: req.sanitize('firstname').escape().trim(),
+            lastname: req.sanitize('lastname').escape().trim(),
+            age: parseInt(req.sanitize('age').escape().trim()),
             email: req.sanitize('email').escape().trim(),
             password: req.sanitize('password').escape().trim(),
             class: req.sanitize('class').escape().trim(),
-            hobbies: req.sanitize('hpbbies').escape().trim()
+            result: req.sanitize('result').escape().trim(),
+            hobbies: req.sanitize('hobbies').escape().trim().split(',')
         })
        console.log(user.hobbies)
        // req.db.collection('users').save(user, function(err, result) {
@@ -393,12 +430,14 @@ app.post('/add', function(req, res, next){
                 // render to views/user/add.ejs
                 res.render('user/add', {
                     title: 'Add New User',
-                    name: user.name,
+                    firstname: user.fristname,
+                    lastname: user.lastname,
                     age: user.age,
                     email: user.email,
                     password:user.password,
                     class:    user.class,
-                    hobbies:  user.hobbies             
+                    hobbies:  user.hobbies,
+                    result:user.result            
                 })
             } else {                
                 req.flash('success', 'Registered successfully! Now you can Login with same')
@@ -424,17 +463,19 @@ app.post('/add', function(req, res, next){
          */ 
         res.render('user/add', { 
             title: 'Add New User',
-            name: req.body.name,
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
             age: req.body.age,
             email: req.body.email,
             password:req.body.password,
             class:    req.body.class,
-            hobbies:  req.body.hobbies  
+            hobbies:  req.body.hobbies,
+            result:req.body.result
         })
     }
 })
 
-
+////////////////////////////////////////////// login call ////////////////////////////////////////////////////////
 app.post('/login', function(req, res, next){
    
     req.assert('email', 'A valid email is required').isEmail()  //Validate email
@@ -489,14 +530,14 @@ app.post('/login', function(req, res, next){
     }
 })
  
-// SHOW EDIT USER FORM
+///////////////////////////////// SHOW EDIT USER FORM //////////////////////////////////////////////////////////
 app.get('/edit/(:id)', function(req, res, next){
     var o_id = new ObjectId(req.params.id)
-    req.db.collection('users').find({"_id": o_id}).toArray(function(err, result) {
+    req.db.collection('users').find({"_id": o_id}).toArray(function(err, rezult) {
         if(err) return console.log(err)
         
         // if user not found
-        if (!result) {
+        if (!rezult) {
             req.flash('error', 'User not found with id = ' + req.params.id)
             res.redirect('/users')
         }
@@ -505,24 +546,28 @@ app.get('/edit/(:id)', function(req, res, next){
             res.render('user/edit', {
                 title: 'Edit User', 
                
-                id: result[0]._id,
-                name: result[0].name,
-                age: result[0].age,
-                email: result[0].email ,
-                class:result[0].class,
-                hobbies:result[0].hobbies         
+                id: rezult[0]._id,
+                firstname: rezult[0].firstname,
+                lastname:rezult[0].lastname,
+                age: rezult[0].age,
+                email: rezult[0].email ,
+                class:rezult[0].class,
+                hobbies:rezult[0].hobbies ,
+                result:rezult[0].result      
             })
         }
     })    
 })
  
-// EDIT USER POST ACTION
+/////////////////////////////////////////// EDIT USER POST ACTION ////////////////////////////////////////////////////
 app.put('/edit/(:id)', function(req, res, next) {
-    req.assert('name', 'Name is required').notEmpty()           //Validate name
+    req.assert('firstname', 'firstName is required').notEmpty()           //Validate name
+    req.assert('lastname', 'lastName is required').notEmpty()
     req.assert('age', 'Age is required').notEmpty()             //Validate age
     req.assert('email', 'A valid email is required').isEmail()  //Validate email
     req.assert('class','Class is required').notEmpty()
-    req.assert('hobbies','hobbies is required').notEmpty() 
+    req.assert('hobbies','hobbies is required').notEmpty()
+    req.assert('result','result is required').notEmpty() 
     var errors = req.validationErrors()
     
     if( !errors ) {   //No errors were found.  Passed Validation!
@@ -537,11 +582,13 @@ app.put('/edit/(:id)', function(req, res, next) {
         req.sanitize('username').trim(); // returns 'a user'
         ********************************************/
         var user = {
-            name: req.sanitize('name').escape().trim(),
-            age: req.sanitize('age').escape().trim(),
+            firstname: req.sanitize('firstname').escape().trim(),
+            lastname: req.sanitize('lastname').escape().trim(),
+            age: parseInt(req.sanitize('age').escape().trim()),
             email: req.sanitize('email').escape().trim(),
             class: req.sanitize('class').escape().trim(),
-            hobbies: req.sanitize('hobbies').escape().trim()
+            hobbies: req.sanitize('hobbies').escape().trim().split(','),
+            result: req.sanitize('result').escape().trim(),
         }
         
         var o_id = new ObjectId(req.params.id)
@@ -553,11 +600,13 @@ app.put('/edit/(:id)', function(req, res, next) {
                 res.render('user/edit', {
                     title: 'Edit User',
                     id: req.params.id,
-                    name: req.body.name,
+                    firstname: req.body.firstname,
+                    lastname: req.body.lastname,
                     age: req.body.age,
                     email: req.body.email,
                     class: req.body.class,
-                    hobbies:req.body.hobbies
+                    hobbies:req.body.hobbies,
+                    result: req.body.result
                     
                 })
             } else {
@@ -590,17 +639,19 @@ app.put('/edit/(:id)', function(req, res, next) {
         res.render('user/edit', { 
             title: 'Edit User',            
             id: req.params.id, 
-            name: req.body.name,
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
             age: req.body.age,
             email: req.body.email,
             class: req.body.class,
-            hobbies:req.body.hobbies
+            hobbies:req.body.hobbies,
+            result: req.body.result
            
         })
     }
 })
  
-// DELETE USER
+//////////////////////////////////////////////////////////////// DELETE USER ////////////////////////////////////////////////////////////
 app.delete('/delete/(:id)', function(req, res, next) {    
     var o_id = new ObjectId(req.params.id)
     req.db.collection('users').remove({"_id": o_id}, function(err, result) {
