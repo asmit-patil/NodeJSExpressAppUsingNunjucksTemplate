@@ -54,6 +54,7 @@ app.get('/getuniquefirstnames',function(req,res,next){
             res.send(docs)
         }
       });
+
 })
 
 //////////////////////////////////////////for getting minimum-age & maximum-age & average-age///////////////////////////////////////
@@ -252,6 +253,27 @@ request(options, function(err, res2, body) {
 
 
 
+})
+
+app.get('/gethomedata',function(req,res,next){
+    const options = {  
+        url: 'https://cdn.contentstack.io/v3/content_types/home/entries/blt18ca953908cad013?api_key=bltd1343376dfba54d2&access_token=bltfe57b09b1e4c5732&environment=staging&locale=en-us&include_dimension=true',
+        method: 'GET',
+        headers: {
+          //  'Accept': 'application/vnd.github.v3+json',
+            'Accept-Charset': 'utf-8',
+            'User-Agent': 'my-reddit-client'
+        }
+    };
+    
+    request(options, function(err, res2, body) { 
+        if (err || res2.statusCode !== 200) {
+            return res2.sendStatus(500);
+          } 
+        let json = JSON.parse(body);
+        console.log(json);
+        res.send(json)
+    });
 })
 
 // SHOW ADD USER FORM
